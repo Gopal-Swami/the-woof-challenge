@@ -16,6 +16,7 @@ const authUser = asyncHandler(async (req, res) => {
       age: user.age,
       gender: user.gender,
       city: user.city,
+      savedPosts: user.savedPosts,
       token: generateToken(user._id),
     });
   } else {
@@ -51,7 +52,7 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const createProfile = asyncHandler(async (req, res) => {
-  const { name, age, city } = req.body;
+  const { name, age, city, gender } = req.body;
   let profile = req.file
     ? req.file.path.split('public')[1]
     : '\\images\\avatar.png';
@@ -65,6 +66,7 @@ const createProfile = asyncHandler(async (req, res) => {
     user.age = age;
     user.city = city;
     user.profile = profile;
+    user.gender = gender;
     await user.save();
     res.status(201).json({
       _id: user._id,
@@ -73,6 +75,7 @@ const createProfile = asyncHandler(async (req, res) => {
       age: user.age,
       city: user.city,
       profile: user.profile,
+      savedPosts: user.savedPosts,
       token: generateToken(user._id),
     });
   }
@@ -88,4 +91,34 @@ const getUserById = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 });
-export { authUser, registerUser, getUserById, createProfile };
+
+const savePost = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (user) {
+    user.savedPosts.push(req.body.postId);
+    await user.save();
+    res.json({ success: true });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+const getUsers = asyncHandler(async (req, res) => {
+  const users = await User.find();
+
+  if (users) {
+    res.json(users);
+  } else {
+    res.status(404);
+    throw new Error('Users not found');
+  }
+});
+export {
+  authUser,
+  registerUser,
+  getUserById,
+  createProfile,
+  savePost,
+  getUsers,
+};

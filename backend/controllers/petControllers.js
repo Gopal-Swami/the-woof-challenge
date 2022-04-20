@@ -24,4 +24,15 @@ const createPetProfile = asyncHandler(async (req, res) => {
   }
 });
 
-export { createPetProfile };
+const getPetById = asyncHandler(async (req, res) => {
+  const pet = await Pet.findById(req.params.id);
+
+  if (pet) {
+    res.json(pet);
+  } else {
+    res.status(404);
+    throw new Error('Pet not found');
+  }
+});
+
+export { createPetProfile, getPetById };

@@ -25,6 +25,7 @@ const userSchema = mongoose.Schema(
       type: String,
       default: '\\images\\avatar.png',
     },
+    savedPosts: [],
   },
   {
     timestamps: true,
